@@ -4,24 +4,21 @@ let previousNumber='';
 let operator='';
 
 
-
 // Calculator functions for add, substract, multiply and divide
 const add = function(a,b) {
     return a+b;    
-};
-  
+}; 
 const subtract = function(a,b) {
     return a-b;   
 };
-
 const multiply = function (a,b) {
     return a*b;
 };
-
 const divide = function (a,b) {
     if (b==0) return 'Cant divide by 0!';
     return a/b;
 };
+
 
 // Function that takes an operator and 2 numbers and calls
 // one of the above functions
@@ -48,9 +45,10 @@ function operate () {
         }
     previousNumber='';
     operator='';
-    updateDisplay()
+    updateDisplay();
     }
-};
+};;
+
 
 //function that clears calculator
 function clearDisplay(e) {
@@ -60,10 +58,50 @@ function clearDisplay(e) {
     updateDisplay();
 }
 
+
+//function that deletes users last input
 function deleteCurrentNumber(e) {
     currentNumber=currentNumber.substring(0, currentNumber.length-1);
     updateDisplay();
 }
+
+
+//function that lets users input decimals
+function addDot(e) {
+    let dot = e.target.textContent.toString();
+    if(currentNumber.includes('.')) return;
+    currentNumber+=dot;
+    updateDisplay();
+}
+
+
+//functions that make pressed numbers/operators appear on display div
+function updateDisplay() {
+    displayCurrent.textContent=currentNumber;
+    displayPrevious.textContent = `${previousNumber} ${operator}`;    
+}
+
+
+//function that takes users number input and saves it in 'currentNumber'
+function appendNumber(e) {
+    let number = e.target.textContent.toString();
+    currentNumber+=number;
+    updateDisplay();
+}
+
+
+//function that takes users operator input and saves it in 'operator'
+function appendOperator(e) {
+    if(previousNumber !== '') {
+        operate();
+    }
+    operator = e.target.textContent.toString();
+    previousNumber=currentNumber;
+    currentNumber='';
+    updateDisplay();
+}
+
+
 //DOM manipulation 
 const displayCurrent=document.querySelector('.currNumber');
 const displayPrevious=document.querySelector('.prevNumber');
@@ -77,6 +115,9 @@ const clearButton = document.querySelector('[data-clear]');
 const deleteButton = document.querySelector('[data-delete]');
     deleteButton.addEventListener('click', deleteCurrentNumber);
 
+const dotButton=document.querySelector('[data-dot]');
+    dotButton.addEventListener('click',addDot)
+
 const numberButtons = document.querySelectorAll('[data-number]');
 numberButtons.forEach((numberButton) => {
     numberButton.addEventListener('click', appendNumber);
@@ -86,26 +127,3 @@ const operationButtons = document.querySelectorAll('[data-operation]');
 operationButtons.forEach((operationButton) => {
     operationButton.addEventListener('click', appendOperator)
 });
-
-//functions that make pressed numbers/operators appear on display div
-function updateDisplay() {
-    displayCurrent.textContent=currentNumber;
-    displayPrevious.textContent = `${previousNumber} ${operator}`;
-
-}
-
-function appendNumber(e) {
-    let number = e.target.textContent.toString();
-    currentNumber+=number
-    updateDisplay();
-}
-
-function appendOperator(e) {
-    if(previousNumber !== '') {
-        operate();
-    }
-    operator = e.target.textContent.toString();
-    previousNumber=currentNumber;
-    currentNumber='';
-    updateDisplay();
-}
