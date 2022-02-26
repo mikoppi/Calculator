@@ -1,5 +1,11 @@
-// Calculator functions for add, substract, multiply and divide
+//Initial values
+let currentNumber='';
+let previousNumber='';
+let operator='';
 
+
+
+// Calculator functions for add, substract, multiply and divide
 const add = function(a,b) {
     return a+b;    
 };
@@ -13,67 +19,93 @@ const multiply = function (a,b) {
 };
 
 const divide = function (a,b) {
+    if (b==0) return 'Cant divide by 0!';
     return a/b;
 };
 
 // Function that takes an operator and 2 numbers and calls
 // one of the above functions
-
-function operate (num1,operator,num2) {
-    let numberOne=Number(num1);
-    let numberTwo=Number(num2);
-    let operators=['+','-','*','/'];
-    switch (operator) {
-        case operators[0]:
-            return result=add(numberOne,numberTwo);
-        case operators[1]:
-            return result=subtract(numberOne,numberTwo);
-        case operators[2]:
-            return result=multiply(numberOne,numberTwo);
-        case operators[3]:
-            return result=divide(numberOne,numberTwo);
+function operate () {
+    if(previousNumber !== '' && currentNumber !== '') {
+        let numberOne=Number(previousNumber);
+        let numberTwo=Number(currentNumber);
+        let operators=['+','-','*','/'];
+        switch (operator) {
+            case operators[0]:
+                currentNumber=add(numberOne,numberTwo);
+                break;
+            case operators[1]:
+                currentNumber=subtract(numberOne,numberTwo);
+                break;
+            case operators[2]:
+                currentNumber=multiply(numberOne,numberTwo);
+                break;
+            case operators[3]:
+                currentNumber=divide(numberOne,numberTwo);
+                break;
+            default:
+                return;
+        }
+    previousNumber='';
+    operator='';
+    updateDisplay()
     }
 };
 
-//functions that make pressed numbers/operators appear on display div
-
-let contentArray=[];
-let tempResult=0;
-const displayContent=document.querySelector('.user-input');
-const buttons = document.querySelectorAll('.excludeEqual');
-buttons.forEach((button)=> {
-    button.addEventListener('click',showTextContent)
-})
-
-const displayResult=document.querySelector('.result');
-const resultButton=document.getElementById('=');
-resultButton.addEventListener('click', showResult);
-
-
-function showTextContent (e) {
-    let text=(e.target.id);
-    if (text!=='delete'&&text!=='clear'&&text!=='=') {
-        contentArray.push(text);
-    }
-    else if (text=='delete') {
-        contentArray.pop();
-    }
-    else if (text=='clear') {
-        contentArray.length=0;
-    }
-    displayContent.textContent=contentArray.join('');
-    return contentArray;
+//function that clears calculator
+function clearDisplay(e) {
+    currentNumber='';
+    previousNumber='';
+    operator='';
+    updateDisplay();
 }
 
+function deleteCurrentNumber(e) {
+    currentNumber=currentNumber.substring(0, currentNumber.length-1);
+    updateDisplay();
+}
+//DOM manipulation 
+const displayCurrent=document.querySelector('.currNumber');
+const displayPrevious=document.querySelector('.prevNumber');
 
-function showResult (e) {
-    while (contentArray.length!=1) {
-        let result=operate(contentArray[0],contentArray[1],contentArray[2]);
-        contentArray.splice(0,3,result);
+const equalsButton= document.querySelector('[data-equals]');
+    equalsButton.addEventListener('click', operate);
+
+const clearButton = document.querySelector('[data-clear]');
+    clearButton.addEventListener('click', clearDisplay);
+
+const deleteButton = document.querySelector('[data-delete]');
+    deleteButton.addEventListener('click', deleteCurrentNumber);
+
+const numberButtons = document.querySelectorAll('[data-number]');
+numberButtons.forEach((numberButton) => {
+    numberButton.addEventListener('click', appendNumber);
+});
+
+const operationButtons = document.querySelectorAll('[data-operation]');
+operationButtons.forEach((operationButton) => {
+    operationButton.addEventListener('click', appendOperator)
+});
+
+//functions that make pressed numbers/operators appear on display div
+function updateDisplay() {
+    displayCurrent.textContent=currentNumber;
+    displayPrevious.textContent = `${previousNumber} ${operator}`;
+
+}
+
+function appendNumber(e) {
+    let number = e.target.textContent.toString();
+    currentNumber+=number
+    updateDisplay();
+}
+
+function appendOperator(e) {
+    if(previousNumber !== '') {
+        operate();
     }
-        
-    displayResult.textContent=result;
-    }
-
-
-   
+    operator = e.target.textContent.toString();
+    previousNumber=currentNumber;
+    currentNumber='';
+    updateDisplay();
+}
